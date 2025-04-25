@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Render Link Pinger</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .link-container {
+      margin-bottom: 20px;
+    }
+    .link-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .link-list li {
+      background-color: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ddd;
+    }
+    .link-list li button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .link-list li button:hover {
+      background-color: darkred;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: darkgreen;
+    }
+  </style>
+</head>
+<body>
+  <h1>Render Link Pinger</h1>
+  
+  <div class="link-container">
+    <input type="text" id="linkInput" placeholder="Enter Render app URL" />
+    <button onclick="addLink()">Add Link</button>
+  </div>
+  
+  <ul class="link-list" id="linkList">
+    <!-- Links will be listed here -->
+  </ul>
+
+  <script>
+    let links = [];
+
+    // Function to add link
+    function addLink() {
+      const linkInput = document.getElementById('linkInput');
+      const link = linkInput.value.trim();
+      if (link && !links.includes(link)) {
+        links.push(link);
+        linkInput.value = ''; // clear input field
+        displayLinks();
+      }
+    }
+
+    // Function to remove link
+    function removeLink(index) {
+      links.splice(index, 1);
+      displayLinks();
+    }
+
+    // Display links
+    function displayLinks() {
+      const linkList = document.getElementById('linkList');
+      linkList.innerHTML = ''; // Clear existing list
+      links.forEach((link, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${link}</span>
+          <button onclick="removeLink(${index})">Remove</button>
+        `;
+        linkList.appendChild(li);
+      });
+      startPing();
+    }
+
+    // Function to ping all links every 5 minutes
+    function startPing() {
+      links.forEach(link => {
+        pingLink(link);
+        setInterval(() => pingLink(link), 5 * 60 * 1000); // Ping every 5 minutes
+      });
+    }
+
+    // Function to ping the link
+    function pingLink(link) {
+      fetch(link, { method: 'GET' })
+        .then(response => {
+          if (response.ok) {
+            console.log(`Successfully pinged: ${link}`);
+          } else {
+            console.log(`Failed to ping: ${link}`);
+          }
+        })
+        .catch(error => {
+          console.log(`Error pinging ${link}: ${error}`);
+        });
+    }
+  </script>
+</body>
+  </html>
